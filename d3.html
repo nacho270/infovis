@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>JS Bin</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.3/d3.min.js"></script>
+  </head>
+
+  <body>
+    <div id ="data_0"> </div>
+    <div id ="data_1"> </div>
+    <hr/>
+    <div id ="vis"> </div>
+    <script>
+      d3.select("#data_0")
+        .append("p")
+        .html("<b>hola mundo</b>")
+
+      //////////////////////////////////////////////////////////
+
+      var data = ['nacho 1', 'nacho 2', 'nacho 3', 'nacho 4']
+      d3.select("#data_1")
+        .selectAll("p").data(data).enter().append("p")
+        .text(function (d,i){ return (i + 1) + " - " + d; })
+
+      //////////////////////////////////////////////////////////
+
+      var followersData = [
+        { name: 'nacho 1', followers: 5163060},
+        { name: 'nacho 2', followers: 1061798},
+        { name: 'nacho 3', followers:  550250},
+        { name: 'nacho 4', followers:  542601}
+      ]
+
+      var w = 400, h = 200, p = 70, dy = h / followersData.length;
+      var max = d3.max(followersData, function(d){return d.followers; });
+      var scale = d3.scaleLinear().domain([0, max]).range([0, w - p]);
+
+      var svg = d3.select("#vis")
+                  .append("svg")
+                  .attr('height', 200)
+                  .attr('width', 400)
+
+      svg.selectAll("rect").data(followersData).enter()
+        .append("rect")
+        .attr('x', 100)
+        .attr('y', function(d, i){ return (i * dy);})
+        .attr('width', function(d,i){ return scale(d.followers);})
+        .attr('height', dy - 1)
+
+      svg.selectAll("text.candidatos").data(followersData).enter()
+        .append("text")
+        .attr('class', 'candidatos')
+        .attr('x', 0)
+        .attr('y', function(d, i){ return (i * dy) + 30;})
+        .text( function(d, i){return (i + 1) + " - " + d.name;})
+
+      svg.selectAll("text.followers").data(followersData).enter()
+        .append("text")
+        .attr('class', 'followers')
+        .attr('fill', function(d, i){ return i === 0 ? 'white':'black';})
+        .attr('x', function(d, i){ return (i === 0 ? 0 : 110) + scale(d.followers);})
+        .attr('y', function(d, i){ return (i * dy) + 30;})
+        .text( function(d, i){return d.followers.toLocaleString();})
+    
+    </script>
+  </body>
+</html>
