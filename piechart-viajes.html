@@ -1,0 +1,26 @@
+<!doctype html>
+<meta charset="utf-8">
+
+<script src="//d3plus.org/js/d3.js"></script>
+<script src="//d3plus.org/js/d3plus.js"></script>
+
+<div id="viz"></div>
+
+<script>
+
+  var data = [
+    {"value": 12483, "name": "1"},
+    {"value": 9656,  "name": "2"},
+    {"value": 4104,  "name": "3"},
+    {"value": 1876,  "name": "4"}
+  ]
+
+  d3plus.viz()
+    .container("#viz")
+    .data(data)
+    .type("pie")
+    .id("name")
+    .size("value")
+    .draw()
+
+</script>
