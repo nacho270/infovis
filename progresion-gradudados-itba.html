@@ -1,0 +1,32 @@
+<!doctype html>
+<meta charset="utf-8">
+
+<!-- load D3js -->
+<script src="//d3plus.org/js/d3.js"></script>
+
+<!-- load D3plus after D3js -->
+<script src="//d3plus.org/js/d3plus.js"></script>
+
+<!-- create container element for visualization -->
+<div id="viz"></div>
+
+<script>
+var dataUrl = "https://raw.githubusercontent.com/aaizemberg/vis/gh-pages/graduados/data.tsv"
+
+// https://bl.ocks.org/d3noob/ced1b9b18bd8192d2c898884033b5529
+// http://bl.ocks.org/emmasaunders/c25a147970def2b02d8c7c2719dc7502
+
+d3plus.viz()
+  .container("#viz")
+  .data(dataUrl)
+  .type("stacked")
+  .id("titulo")
+  .y("cant")
+  .x("año")
+  .size("cant")
+  .time("año")
+  .format("es_ES")
+  .shape({"interpolate": "basis"})
+  .draw()
+  
+</script>
