@@ -1,0 +1,50 @@
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+a:hover.noHover,
+a:focus.noHover {
+    text-decoration: none;
+}
+
+.jumbotron {
+    padding: 20px !important;
+}
+div.tagContainer {
+    height: 40px;
+}
+
+.noMarginLeft {
+    margin-left: 0px !important;
+}
+
+.sectionTitle {
+    border-bottom: 6px solid #eee;
+    display: inline-block;
+}
+
+.filter {
+    background-color: #eeeeee
+}
+
+.filter .col-sm-9 {
+    margin-left: 12%;
+}
+
+.filter .filterTitle {
+    border: 1px solid;
+    padding: 5px;
+}
+
+.filter .filterTitle ul {
+    list-style-type: none;
+}
+
+.filter .filterTitle input {
+    margin-right: 5px;
+}
+
+.filter ul span {
+    cursor: pointer;
+}
