@@ -13,6 +13,9 @@
     <link rel="stylesheet" type="text/css" href="css/section-scroll.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+
     <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
@@ -62,7 +65,7 @@
                     <div class="col-sm-9">
                         <h3>Filtros</h3>
                         <div class="row">
-                            <div class="col-4 col-sm-4 filterTitle">
+                            <div class="col-3 col-sm-3 filterTitle">
                                 <h4>Condicion</h4>
                                 <ul id="filter_condicion">
                                     <li><input type="checkbox" value="L"/><span>LOCAL</span></li>
@@ -70,7 +73,7 @@
                                     <li><input type="checkbox" value="N"/><span>NEUTRAL</span></li>
                                 </ul>
                             </div>
-                            <div class="col-4 col-sm-4 filterTitle">
+                            <div class="col-3 col-sm-3 filterTitle">
                                 <h4>Resultado</h4>
                                 <ul id="filter_resultado">
                                     <li><input type="checkbox" value="G"/><span>GANO</span></li>
@@ -78,13 +81,18 @@
                                     <li><input type="checkbox" value="P"/><span>PERDI&Oacute;</span></li>
                                 </ul>
                             </div>
-                            <div class="col-4 col-sm-4 filterTitle">
+                            <div class="col-3 col-sm-3 filterTitle">
                                 <h4>Tipo de torneo</h4>
                                 <ul id="filter_torneo">
                                     <li><input type="checkbox" value="nacional"/><span>NACIONAL</span></li>
                                     <li><input type="checkbox" value="internacional"/><span>INTERNACIONAL</span></li>
                                     <li><input type="checkbox" value="amistoso"/><span>AMISTOSO</span></li>
                                 </ul>
+                            </div>
+                            <div class="col-3 col-sm-3 filterTitle" style="min-height: 121px">
+                                <h4>A&ntilde;o</h4>
+                                <div id="anio_slider"></div>
+                                <div id="value_slider"></div>
                             </div>
                         </div>
                     </div>
@@ -102,6 +110,7 @@
             </div>
         </div>
     </div>
+    <hr />
     <footer>
         <div class="container">
             <p>&copy; 2017 Ignacio Cicero - Instituto Tecnol&oacute;gico de Buenos Aires</p>
@@ -111,13 +120,7 @@
     <script src="js/vendor/bootstrap.min.js"></script>
     <script src="js/main.js"></script>
     <script src="js/vendor/jquery.section-scroll.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('body').sectionScroll({
-                topOffset: 80
-            });
-        })
-    </script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 </body>
 
 </html>

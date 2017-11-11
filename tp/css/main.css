@@ -3,6 +3,10 @@ body {
     padding-bottom: 20px;
 }
 
+.navbar {
+    padding: 1%;
+}
+
 a:hover.noHover,
 a:focus.noHover {
     text-decoration: none;
@@ -25,7 +29,9 @@ div.tagContainer {
 }
 
 .filter {
-    background-color: #eeeeee
+    background-color: #eeeeee;
+    padding: 15px;
+    padding-bottom: 40px;
 }
 
 .filter .col-sm-9 {
@@ -47,4 +53,19 @@ div.tagContainer {
 
 .filter ul span {
     cursor: pointer;
+}
+
+#anio_slider, #value_slider {
+    font-weight: bold;
+    max-width: 175px;
+    margin-left: 20px;
+}
+
+#value_slider {
+    margin-top: 10px;
+}
+
+footer p {
+    display: block;
+    margin-left: 50px;
 }
