@@ -18,9 +18,10 @@ $(document).ready(function () {
                 });
 
                 let debouncedFilter = _.debounce(function(){
-                    console.log("RELOADING...");
+                    $('#overlay').show()
                     var filtro = filtrarPartidos(partidos)
                     console.log(filtro);
+                    setTimeout(() =>$('#overlay').hide(), 1000);
                 }, 1000);
 
                 $("input:checkbox").bind('click', debouncedFilter);
@@ -96,8 +97,7 @@ $(document).ready(function () {
 
         function drawLines(data) {
             console.log(data);
-    
-    
+
             d3plus.viz()
             .container("#viz")
             .data(data)
