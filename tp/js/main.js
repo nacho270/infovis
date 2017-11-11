@@ -96,18 +96,33 @@ $(document).ready(function () {
         }
 
         function drawLines(data) {
-            console.log(data);
-
-            d3plus.viz()
-            .container("#viz")
-            .data(data)
-            .type("line")
-            .id("anio")
-            .y("total")
-            .x("anio")
-            .height(400) // IMPORTANTE!!  Bootstrap is setting min-height: 1px on the "col-md-8" div. This causes the auto-height detection in D3plus to use that as it's height.
-            .width(800)
-            .draw()
+            var sample_data = [
+                {"year": 1900, "tipo":"G", "value": 15, "parent": "parent 1"},
+                {"year": 1900, "tipo":"E", "value": 20, "parent": "parent 1"},
+                {"year": 1900, "tipo":"P", "value": 30, "parent": "parent 1"},
+                {"year": 1920, "tipo":"G", "value": 60, "parent": "parent 2"},
+                {"year": 1920, "tipo":"E", "value": 10, "parent": "parent 2"},
+                {"year": 1920, "tipo":"P", "value": 10, "parent": "parent 2"},
+                {"year": 1940, "tipo":"G", "value": 40, "parent": "parent 3"},
+                {"year": 1940, "tipo":"E", "value": 60, "parent": "parent 3"},
+                {"year": 1940, "tipo":"P", "value": 5,  "parent": "parent 3"},
+                {"year": 1960, "tipo":"G", "value": 10, "parent": "parent 4"},
+                {"year": 1960, "tipo":"E", "value": 20, "parent": "parent 4"},
+                {"year": 1960, "tipo":"P", "value": 25, "parent": "parent 4"},
+                {"year": 1980, "tipo":"G", "value": 43, "parent": "parent 5"},
+                {"year": 1980, "tipo":"E", "value": 17, "parent": "parent 5"},
+                {"year": 1980, "tipo":"P", "value": 32, "parent": "parent 6"}
+              ]
+              var visualization = d3plus.viz()
+                .container("#viz")
+                .data(sample_data)
+                .type("line")
+                .id(["tipo"])
+                .y("value")
+                .x("year")
+                .height(400) // IMPORTANTE!!  Bootstrap is setting min-height: 1px on the "col-md-8" div. This causes the auto-height detection in D3plus to use that as it's height.
+                .width(800)
+                .draw()
         }
     })()
 
