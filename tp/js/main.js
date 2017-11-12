@@ -34,10 +34,10 @@ class App {
         });
         let oThis = this;
         let debouncedFilter = _.debounce(function(){
-            $('#overlay').show()
+            // $('#overlay').show()
             oThis.resetViz();
             oThis.drawViz(oThis.filtrarPartidos(oThis.partidos))
-            setTimeout(() =>$('#overlay').hide(), 1000);
+            // setTimeout(() =>$('#overlay').hide(), 1000);
         }, 1000);
         $("input:checkbox").bind('click', debouncedFilter);
         $("#anio_slider").on('slide', debouncedFilter);
