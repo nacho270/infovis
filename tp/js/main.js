@@ -1,4 +1,8 @@
-"use strict";
+(function () {
+    'use strict';
+}());
+
+//HELP: https://github.com/alexandersimoes/d3plus/wiki/Visualizations
 
 $(document).ready(function () {
     $('body').sectionScroll({
@@ -10,42 +14,24 @@ $(document).ready(function () {
         d3.json(`partidos.json?r=${rand}`, function(data){
             var partidos = data;
             initSlider(partidos);
-            d3.json(`partidos_anio.json?r=${rand}`, function(data){
-                var partidos_anio = data;
-                drawLines(partidos_anio);
-                $(".filter ul span").bind("click", function(){
-                    $($(this).siblings()[0]).click();
-                });
-
-                let debouncedFilter = _.debounce(function(){
-                    $('#overlay').show()
-                    var filtro = filtrarPartidos(partidos)
-                    console.log(filtro);
-                    setTimeout(() =>$('#overlay').hide(), 1000);
-                }, 1000);
-
-                $("input:checkbox").bind('click', debouncedFilter);
-                $("#anio_slider").on('slide', debouncedFilter);
-                /*var data = [
-                    {"value": 100, "name": "alpha"},
-                    {"value": 70, "name": "beta"},
-                    {"value": 40, "name": "gamma"},
-                    {"value": 15, "name": "delta"},
-                    {"value": 5, "name": "epsilon"},
-                    {"value": 1, "name": "zeta"}
-                  ]
-                  d3plus.viz()
-                    .container("#viz")
-                    .data(data)
-                    .type("pie")
-                    .id("name")
-                    .size("value")
-                    .height(400) // IMPORTANTE!!  Bootstrap is setting min-height: 1px on the "col-md-8" div. This causes the auto-height detection in D3plus to use that as it's height.
-                    .width(800)
-                    .draw();*/
-
-
+            drawViz(partidos);
+            $(".filter ul span").bind("click", function(){
+                $($(this).siblings()[0]).click();
             });
+
+            let debouncedFilter = _.debounce(function(){
+                $('#overlay').show()
+                var filtro = filtrarPartidos(partidos);
+                console.log(filtro);
+                $('#viz').html('');
+                $('#viz2').html('');
+                $('#viz3').html('');
+                drawViz(filtro)
+                setTimeout(() =>$('#overlay').hide(), 1000);
+            }, 1000);
+
+            $("input:checkbox").bind('click', debouncedFilter);
+            $("#anio_slider").on('slide', debouncedFilter);
         });
 
         function filtrarPartidos(partidos) {
@@ -95,34 +81,120 @@ $(document).ready(function () {
             });
         }
 
-        function drawLines(data) {
-            var sample_data = [
-                {"year": 1900, "tipo":"G", "value": 15, "parent": "parent 1"},
-                {"year": 1900, "tipo":"E", "value": 20, "parent": "parent 1"},
-                {"year": 1900, "tipo":"P", "value": 30, "parent": "parent 1"},
-                {"year": 1920, "tipo":"G", "value": 60, "parent": "parent 2"},
-                {"year": 1920, "tipo":"E", "value": 10, "parent": "parent 2"},
-                {"year": 1920, "tipo":"P", "value": 10, "parent": "parent 2"},
-                {"year": 1940, "tipo":"G", "value": 40, "parent": "parent 3"},
-                {"year": 1940, "tipo":"E", "value": 60, "parent": "parent 3"},
-                {"year": 1940, "tipo":"P", "value": 5,  "parent": "parent 3"},
-                {"year": 1960, "tipo":"G", "value": 10, "parent": "parent 4"},
-                {"year": 1960, "tipo":"E", "value": 20, "parent": "parent 4"},
-                {"year": 1960, "tipo":"P", "value": 25, "parent": "parent 4"},
-                {"year": 1980, "tipo":"G", "value": 43, "parent": "parent 5"},
-                {"year": 1980, "tipo":"E", "value": 17, "parent": "parent 5"},
-                {"year": 1980, "tipo":"P", "value": 32, "parent": "parent 6"}
-              ]
-              var visualization = d3plus.viz()
+        function drawViz(partidosFiltrados) {
+            let series = [];
+            let countPartidos = function(anio, resultado) {
+                return _.chain(partidosFiltrados)
+                    .filter(p => parseInt(p.anio) <= anio)
+                    .filter(p => p.resultado === resultado)
+                    .value().length;
+            }
+            let resultados = ["G", "E", "P"];
+            let inicio = parseInt(partidosFiltrados[0].anio);
+            let fin = parseInt(partidosFiltrados[partidosFiltrados.length - 1].anio);
+            let statAnios = {
+                arriba: 0,
+                abajo: 0,
+                igual: 0
+            }
+            for (let i = inicio; i <= fin; i++) {
+                for(let j = 0; j < resultados.length; j++) {
+                    series.push({
+                        resultado: resultados[j],
+                        anio: i.toString(),
+                        valor: countPartidos(i, resultados[j])
+                    })
+                }
+                var fGEP = function(serie) {
+                    let g, e, p;
+                    for(let i = 0; i < serie.length; i++) {
+                        if(serie[i].resultado === "G") {
+                            g = serie[i].valor;
+                        } else if(serie[i].resultado === "E") {
+                            e = serie[i].valor;
+                        } else {
+                            p = serie[i].valor;
+                        }
+                    }
+                    return [g, e, p];
+                };
+                let s = series.slice(-3);
+                var [ganados, empatados, perdidos] = fGEP(s);
+                if (ganados > perdidos) {
+                    statAnios.arriba = statAnios.arriba + 1;
+                } else if(ganados === perdidos) {
+                    statAnios.igual = statAnios.igual + 1;
+                } else {
+                    statAnios.abajo = statAnios.abajo + 1;
+                }
+            }
+
+            d3plus.viz()
                 .container("#viz")
-                .data(sample_data)
+                .data({
+                    stroke: { "width": 3 },
+                    value: series
+                })
                 .type("line")
-                .id(["tipo"])
-                .y("value")
-                .x("year")
+                .id("resultado")
+                .y("valor")
+                .x("anio")
+                .shape({
+                    interpolate: 'monotone',
+                    rendering: 'geometricPrecision'
+                })
+                .color(function(a) {
+                    return a.resultado === 'G' ? '#0000FF' : a.resultado === 'P' ? '#FF0000' : '#cccccc';
+                })
+                .format("es_ES")
                 .height(400) // IMPORTANTE!!  Bootstrap is setting min-height: 1px on the "col-md-8" div. This causes the auto-height detection in D3plus to use that as it's height.
-                .width(800)
                 .draw()
+
+            $('#stats').html(`A&ntilde;os arriba: ${statAnios.arriba} - A&ntilde;os iguales: ${statAnios.igual} - A&ntilde;os abajo: ${statAnios.abajo}`);
+
+            var dataPie = series.slice(-3);
+            d3plus.viz()
+                .container("#viz2")
+                .data(dataPie)
+                .type("pie")
+                .id("resultado")
+                .size("valor")
+                .format("es_ES")
+                .color(function(a) {
+                    return a.resultado === 'G' ? '#0000FF' : a.resultado === 'P' ? '#FF0000' : '#cccccc';
+                })
+                .legend({
+                    align: "end",
+                    data: true,
+                    labels: true,
+                    value: true
+                })
+                .height(400) // IMPORTANTE!!  Bootstrap is setting min-height: 1px on the "col-md-8" div. This causes the auto-height detection in D3plus to use that as it's height.
+                .draw();
+            var gep = fGEP(dataPie);
+            $('#statsPie').html(`Ganados: ${gep[0]} - Empatados: ${gep[1]} - Perdidos: ${gep[2]}`);
+
+            var groups = _.groupBy(partidosFiltrados, p => p.anio )
+            var partidosPorAnio = _.map(groups, g => {
+                return {
+                    anio: g[0].anio,
+                    name: "PARTIDOS",
+                    value: g.length
+                }
+            });
+            var totalPartidos = _.reduce(partidosPorAnio, (a, b) => a + b.value, 0);
+            d3plus.viz()
+                .container("#viz3")
+                .data(partidosPorAnio)
+                .type("stacked")
+                .id("name")
+                .text("name")
+                .y("value")
+                .x("anio")
+                .format("es_ES")
+                .height(400) // IMPORTANTE!!  Bootstrap is setting min-height: 1px on the "col-md-8" div. This causes the auto-height detection in D3plus to use that as it's height.
+                .draw()
+                $('#statsStack').text(`Total de partidos: ${totalPartidos}`);
         }
     })()
 
