@@ -53,6 +53,7 @@ class App {
     initSlider() {
         let inicio =  parseInt(this.partidos[0].anio);
         let fin =  parseInt(this.partidos[this.partidos.length - 1].anio);
+        let oThis = this;
         this.createAnioLabel(inicio, fin);
         $("#anio_slider").slider({
             range: true,
@@ -60,9 +61,10 @@ class App {
             max: fin,
             values: [inicio, fin],
             slide(event, ui) {
-                this.createAnioLabel(ui.values[0], ui.values[1]);
+                oThis.createAnioLabel(ui.values[0], ui.values[1]);
             }
         });
+        $( "#anio_slider .ui-slider-range" ).css('background', '#0c50a0');
     }
     
     getSelectedCheckboxValues(selector) {

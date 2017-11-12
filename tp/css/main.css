@@ -7,6 +7,10 @@ body {
     padding: 1%;
 }
 
+.bg-primary {
+    background-color: #0c50a0;
+}
+
 a:hover.noHover,
 a:focus.noHover {
     text-decoration: none;
@@ -29,9 +33,10 @@ div.tagContainer {
 }
 
 .filter {
-    background-color: #eeeeee;
+    background-color: #f7f7f7;
     padding: 15px;
     padding-bottom: 40px;
+    border: 1px solid;
 }
 
 .filter .col-sm-9 {
@@ -57,7 +62,7 @@ div.tagContainer {
 
 #anio_slider, #value_slider {
     font-weight: bold;
-    max-width: 175px;
+    max-width: 165px;
     margin-left: 20px;
 }
 
