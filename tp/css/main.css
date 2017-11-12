@@ -79,11 +79,12 @@ footer p {
     background: #6b98bbda;
     opacity: 0.8;
     filter: alpha(opacity=80);
-    height: 1500px;
+    height: 1650px;
     z-index: 2000;
     display: none;
 }
 
+/*
 #loading {
     width: 50px;
     height: 57px;
@@ -92,7 +93,12 @@ footer p {
     left: 50%;
     margin: -28px 0 0 -25px;
 }
+*/
 
 #stats, #statsPie, #statsStack {
     text-align: center;
+    font-weight: bold;
+    padding: 30px;
+    border: 1px solid;
+    margin: 15px 0 15px 0;
 }
