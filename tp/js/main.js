@@ -96,7 +96,7 @@ class App {
     }
 
     colorMap(p) {
-        return p.resultado === 'G' ? '#0000FF' : p.resultado === 'P' ? '#FF0000' : '#cccccc';
+        return p.resultado === 'G' ? '#0000FF' : p.resultado === 'P' ? '#FF0000' : '#FCDC32';
     }
 
     countPartidos(partidosFiltrados, anio, resultado) {
@@ -156,7 +156,8 @@ class App {
             return {
                 anio: g[0].anio,
                 name: "PARTIDOS",
-                value: g.length
+                value: g.length,
+                color: "#FCDC32"
             }
         });
         return[partidosPorAnio, _.reduce(partidosPorAnio, (a, b) => a + b.value, 0)];
@@ -234,6 +235,7 @@ class App {
             .type("stacked")
             .id("name")
             .text("name")
+            .color("color")
             .y({
                 value: "value",
                 label: "Cantidad"
