@@ -196,8 +196,12 @@ class App {
             .color(this.colorMap)
             .format("es_ES")
             .height(400) // IMPORTANTE!!  Bootstrap is setting min-height: 1px on the col divs
-            .draw()
-        $('#stats').html(`A&ntilde;os arriba: ${statAnios.arriba} - A&ntilde;os iguales: ${statAnios.igual} - A&ntilde;os abajo: ${statAnios.abajo}`);
+            .draw();
+        if(this.getSelectedCheckboxValues("#filter_resultado input:checkbox:checked").length == 0) {
+            $('#stats').html(`A&ntilde;os arriba: ${statAnios.arriba} - A&ntilde;os iguales: ${statAnios.igual} - A&ntilde;os abajo: ${statAnios.abajo}`);            
+        } else {
+            $('#stats').html("Filtro seleccionado inv&aacute;lido para mostrar esta informaci&oacute;n");                        
+        }
 
         let dataPie = series.slice(-3);
         d3plus.viz()
