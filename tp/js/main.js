@@ -35,12 +35,12 @@ class App {
         let oThis = this;
         let debouncedFilter = _.debounce(function(){
             // $('#overlay').show()
-            oThis.resetViz();
             oThis.drawViz(oThis.filtrarPartidos(oThis.partidos))
             // setTimeout(() =>$('#overlay').hide(), 1000);
         }, 1000);
         $("input:checkbox").bind('click', debouncedFilter);
         $("#anio_slider").on('slide', debouncedFilter);
+        $('#myModal').modal({ show: false})
     }
 
     createAnioLabel(inicio, fin) {
@@ -164,6 +164,12 @@ class App {
     }
 
     drawViz(partidosFiltrados) {
+        if (partidosFiltrados.length == 0) {
+            $('#myModal .modal-body').text("No se han encontrado partidos para los filtros seleccionados");
+            $('#myModal').modal('show');
+            return;
+        }
+        this.resetViz();
         let [series, statAnios] = this.makeSeries(partidosFiltrados);
         d3plus.viz()
             .container("#viz")
