@@ -23,9 +23,11 @@ class App {
         $('#viz').html('');
         $('#viz2').html('');
         $('#viz3').html('');
+        $('#viz4').html('');        
         $('#statsStack').text("");
         $('#stats').html("");
         $('#statsPie').html("");
+        $('#statsPorcentaje').html("");
     }
 
     initEvents() {
@@ -102,7 +104,7 @@ class App {
     countPartidos(partidosFiltrados, anio, resultado) {
         return _.chain(partidosFiltrados)
             .filter(p => parseInt(p.anio) <= anio)
-            .filter(p => p.resultado === resultado)
+            .filter(p => !resultado || p.resultado === resultado)
             .value().length;
     }
     
@@ -130,13 +132,23 @@ class App {
             abajo: 0,
             igual: 0
         }
+        let statPorcentaje = {
+            porcGan: 0,
+            porcEmp: 0,
+            porcPer: 0
+        }
+        var partidosHasta;
+        //var totalGanados = 0, totalEmpatados = 0, totalPerdidos = 0;
         for (let i = inicio; i <= fin; i++) {
+            partidosHasta = this.countPartidos(partidosFiltrados, i, undefined);
             for(let j = 0; j < resultados.length; j++) {
+                let partidosAnioResultado = this.countPartidos(partidosFiltrados, i, resultados[j]);
                 series.push({
                     resultado: resultados[j],
                     anio: i.toString(),
-                    valor: this.countPartidos(partidosFiltrados, i, resultados[j])
-                })
+                    valor: partidosAnioResultado,
+                    porcentaje: partidosAnioResultado / partidosHasta * 100
+                });
             }
             let s = series.slice(-3);
             let [ganados, empatados, perdidos] = this.gep(s);
@@ -148,7 +160,12 @@ class App {
                 statAnios.abajo = statAnios.abajo + 1;
             }
         }
-        return [series, statAnios];
+        let s = series.slice(-3);
+        let [totalGanados, totalEmpatados, totalPerdidos] = this.gep(s);
+        statPorcentaje.porcGan =  totalGanados / partidosHasta * 100;
+        statPorcentaje.porcEmp =  totalEmpatados / partidosHasta * 100;
+        statPorcentaje.porcPer =  totalPerdidos / partidosHasta * 100;
+        return [series, statAnios, statPorcentaje];
     }
 
     makePartidosPorAnio(partidosFiltrados){
@@ -170,7 +187,7 @@ class App {
             return;
         }
         this.resetViz();
-        let [series, statAnios] = this.makeSeries(partidosFiltrados);
+        let [series, statAnios, statPorcentaje] = this.makeSeries(partidosFiltrados);
         d3plus.viz()
             .container("#viz")
             .data({
@@ -254,6 +271,35 @@ class App {
             .height(400) // IMPORTANTE!!  Bootstrap is setting min-height: 1px on the col divs
             .draw()
         $('#statsStack').text(`Total de partidos: ${totalPartidos}`);
+
+        d3plus.viz()
+            .container("#viz4")
+            .data(series)
+            .type("stacked")
+            .text("resultado")
+            .id("resultado")
+            .y({
+                value: "porcentaje",
+                label: "%"
+            })
+            .x({
+                value: "anio",
+                label: "Año"
+            })
+            .color(this.colorMap)
+            .legend({
+                align: "end",
+                data: true,
+                labels: true,
+                value: true,
+                order(a) {
+                    return _.sortBy(a, o => o.valor).reverse();
+                }
+            })
+            .format("es_ES")
+            .height(400) // IMPORTANTE!!  Bootstrap is setting min-height: 1px on the col divs
+            .draw();            
+        $('#statsPorcentaje').text(`Ganados: ${statPorcentaje.porcGan.toFixed(2)}% - Empatados: ${statPorcentaje.porcEmp.toFixed(2)}% - Perdidos: ${statPorcentaje.porcPer.toFixed(2)}%`);
     }
 }
 
