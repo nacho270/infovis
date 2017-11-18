@@ -4,18 +4,15 @@
 
 class App {
 
-    constructor(partidos) {
-        this.partidos = partidos;        
-        this.colorResultado = {
-            G: '#0000FF',
-            P: '#FF0000',
-            E: '#cccccc'
-        };
+    constructor(partidos, titulos) {
+        this.partidos = partidos;
+        this.titulos = titulos;
     }
 
     init() {
         this.initSlider();
         this.initEvents();
+        this.drawTrophiesViz();
         this.drawViz(this.partidos);        
     }
 
@@ -301,11 +298,142 @@ class App {
             .draw();            
         $('#statsPorcentaje').text(`Ganados: ${statPorcentaje.porcGan.toFixed(2)}% - Empatados: ${statPorcentaje.porcEmp.toFixed(2)}% - Perdidos: ${statPorcentaje.porcPer.toFixed(2)}%`);
     }
+
+    drawTrophiesViz() {
+        let margin = {top: 50, right: 30, bottom: 10, left: 120},
+        width = 670 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+        let y = d3.scale.ordinal().rangeRoundBands([0, height], .3);
+        let x = d3.scale.linear().rangeRound([0, width]);
+        let color = d3.scale.ordinal().range(["#0000FF", "#FF0000"]);
+        let xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("top");
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+        
+        let svg = d3.select("#viz5").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .attr("id", "d3-plot")
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        color.domain(["Boca", "River"]);
+        var oThis = this;
+        this.titulos.forEach((d) => {
+            var x0 = -1*(d["Boca"]);
+            var idx = -1;
+            d.boxes = color.domain().map((name) => { 
+                idx++;
+                return {
+                    name: name, 
+                    x0: x0, 
+                    x1: x0 += +d[name], 
+                    N: +d.N, 
+                    n: +d[idx === 0 ? "Boca":"River"]
+                }; 
+            });
+        });
+        
+        var min_val = d3.min(this.titulos, (d) => d.boxes["0"].x0); 
+        var max_val = d3.max(this.titulos, (d) => d.boxes["1"].x1);    
+        x.domain([min_val, max_val]).nice();
+        y.domain(this.titulos.map((d) => d.Copa));
+     
+        svg.append("g")
+            .attr("class", "x axis")
+            .call(xAxis);
+
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+
+        var vakken = svg.selectAll(".copa")
+            .data(this.titulos)
+            .enter().append("g")
+            .attr("class", "bar")
+            .attr("transform", (d) => "translate(0," + y(d.Copa) + ")");
+
+        var bars = vakken.selectAll("rect")
+            .data((d) => d.boxes)
+            .enter().append("g").attr("class", "subbar");
+
+        bars.append("rect")
+            .attr("height", y.rangeBand())
+            .attr("x", (d) => x(d.x0))
+            .attr("width", (d) => x(d.x1) - x(d.x0))
+            .style("fill", (d) =>  color(d.name));
+
+        bars.append("text")
+            .attr("x", (d) => x(d.x0))
+            .attr("y", y.rangeBand()/2)
+            .attr("dy", "0.5em")
+            .attr("dx", "0.5em")
+            .attr("fill", (a) => a.name === "Boca" ? "#FCDC32" : "#FFFFFF")
+            .style("font" ,"10px sans-serif")
+            .style("text-anchor", "begin")
+            .text((d) => d.n !== 0 && (d.x1-d.x0)>3 ? d.n : "");
+
+        vakken.insert("rect",":first-child")
+            .attr("height", y.rangeBand())
+            .attr("x", "1")
+            .attr("width", width)
+            .attr("fill-opacity", "0.5")
+            .style("fill", "#F5F5F5")
+            .attr("class", (d,index) => index%2==0 ? "even" : "uneven"); 
+        
+        svg.append("g")
+            .attr("class", "y axis")
+            .append("line")
+            .attr("x1", x(0))
+            .attr("x2", x(0))
+            .attr("y2", height);
+        
+        var startp = svg.append("g").attr("class", "legendbox").attr("id", "mylegendbox");
+        var legend_tabs = [0, 120, 200, 375, 450];
+        var legend = startp.selectAll(".legend")
+            .data(color.domain().slice())
+            .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", (d, i) => "translate(" + legend_tabs[i] + ",-45)");
+
+        legend.append("rect")
+            .attr("x", 0)
+            .attr("width", 18)
+            .attr("height", 18)
+            .style("fill", color);
+
+        legend.append("text")
+            .attr("x", 22)
+            .attr("y", 9)
+            .attr("dy", ".35em")
+            .style("text-anchor", "begin")
+            .style("font" ,"10px sans-serif")
+            .text((d) => d);
+
+        d3.selectAll(".axis path")
+            .style("fill", "none")
+            .style("stroke", "#000")
+            .style("shape-rendering", "crispEdges")
+
+        d3.selectAll(".axis line")
+            .style("fill", "none")
+            .style("stroke", "#000")
+            .style("shape-rendering", "crispEdges")
+
+        var movesize = width/2 - startp.node().getBBox().width/2;
+        d3.selectAll(".legendbox").attr("transform", "translate(" + movesize  + ",0)");
+    }
 }
 
 $(document).ready(function () {
     $('body').sectionScroll({
         topOffset: 80
     });
-    d3.json(`partidos.json?r=${new Date().getTime()}`, data =>  new App(data).init());
+    d3.json(`partidos.json?r=${new Date().getTime()}`, partidos =>  {
+        d3.csv(`titulos.csv?r=${new Date().getTime()}`, (error, titulos) => {
+            new App(partidos, titulos).init();
+        });
+    });
 });

@@ -111,3 +111,39 @@ footer p {
 .jumbotron p {
     font-weight: bold;
 }
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+#tabla_titulos {
+    max-width: 400px;
+    font-size: 12pt;
+    margin-left: 42px;
+}
+
+#tabla_titulos .row {
+    /*border: 1px solid; */
+    text-align: center;
+    padding: 6px;
+}
+
+#tabla_titulos .row.titulo {
+    background: #0000FF;
+    color: #FFFFFF;
+}
+
+#tabla_titulos .row.total {
+    background: #e3e4e5;
+}
+
+#tabla_titulos .row.total.final {
+   border: 1px solid;
+}
+
+#tabla_titulos p {
+    margin: 0px;
+    padding: 4px;
+}
