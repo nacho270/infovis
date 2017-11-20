@@ -127,7 +127,15 @@ class App {
         let statAnios = {
             arriba: 0,
             abajo: 0,
-            igual: 0
+            igual: 0,
+            mayorDiferenciaAFavor: {
+                anio:0,
+                cantidad:0
+            },
+            mayorDiferenciaEnContra: {
+                anio: 0,
+                cantidad: 0
+            }
         }
         let statPorcentaje = {
             porcGan: 0,
@@ -151,10 +159,18 @@ class App {
             let [ganados, empatados, perdidos] = this.gep(s);
             if (ganados > perdidos) {
                 statAnios.arriba = statAnios.arriba + 1;
+                if(ganados > statAnios.mayorDiferenciaAFavor.cantidad) {
+                    statAnios.mayorDiferenciaAFavor.cantidad = ganados - perdidos;
+                    statAnios.mayorDiferenciaAFavor.anio = i;
+                }
             } else if(ganados === perdidos) {
                 statAnios.igual = statAnios.igual + 1;
             } else {
                 statAnios.abajo = statAnios.abajo + 1;
+                if(perdidos > statAnios.mayorDiferenciaEnContra.cantidad) {
+                    statAnios.mayorDiferenciaEnContra.cantidad = perdidos - ganados;
+                    statAnios.mayorDiferenciaEnContra.anio = i;
+                }
             }
         }
         let s = series.slice(-3);
@@ -174,7 +190,10 @@ class App {
                 color: "#FCDC32"
             }
         });
-        return[partidosPorAnio, _.reduce(partidosPorAnio, (a, b) => a + b.value, 0)];
+        return[partidosPorAnio,
+               _.reduce(partidosPorAnio, (a, b) => a + b.value, 0),
+               _.max(partidosPorAnio, (a) => a.value),
+               _.min(partidosPorAnio, (a) => a.value)];
     }
 
     drawViz(partidosFiltrados) {
@@ -216,10 +235,14 @@ class App {
             })
             .color(this.colorMap)
             .format("es_ES")
-            .height(400) // IMPORTANTE!!  Bootstrap is setting min-height: 1px on the col divs
+            .height(500) // IMPORTANTE!!  Bootstrap is setting min-height: 1px on the col divs
             .draw();
         if(this.getSelectedCheckboxValues("#filter_resultado input:checkbox:checked").length == 0) {
-            $('#stats').html(`A&ntilde;os arriba: ${statAnios.arriba} - A&ntilde;os iguales: ${statAnios.igual} - A&ntilde;os abajo: ${statAnios.abajo}`);            
+            $('#stats').html(`A&ntilde;os arriba: ${statAnios.arriba} - ` + 
+                             `A&ntilde;os iguales: ${statAnios.igual} - ` +
+                             `A&ntilde;os abajo: ${statAnios.abajo} <br/> ` +
+                             `Mayor diferencia a favor: ${statAnios.mayorDiferenciaAFavor.cantidad} (${statAnios.mayorDiferenciaAFavor.anio}) - ` +
+                             `Mayor diferencia en contra: ${statAnios.mayorDiferenciaEnContra.cantidad} (${statAnios.mayorDiferenciaEnContra.anio})`);            
         } else {
             $('#stats').html("Filtro seleccionado inv&aacute;lido para mostrar esta informaci&oacute;n");                        
         }
@@ -248,7 +271,7 @@ class App {
         let gep = this.gep(dataPie);
         $('#statsPie').html(`Ganados: ${gep[0]} - Empatados: ${gep[1]} - Perdidos: ${gep[2]}`);
 
-        let [partidosPorAnio, totalPartidos] = this.makePartidosPorAnio(partidosFiltrados);
+        let [partidosPorAnio, totalPartidos, maxAnio, minAnio] = this.makePartidosPorAnio(partidosFiltrados);
         d3plus.viz()
             .container("#viz3")
             .data(partidosPorAnio)
@@ -267,7 +290,9 @@ class App {
             .format("es_ES")
             .height(400) // IMPORTANTE!!  Bootstrap is setting min-height: 1px on the col divs
             .draw()
-        $('#statsStack').text(`Total de partidos: ${totalPartidos}`);
+        $('#statsStack').html(`Total de partidos: ${totalPartidos} - ` +
+                              `M&aacute;s partidos: ${maxAnio.anio} (${maxAnio.value}) - ` +
+                              `Menos partidos: ${minAnio.anio} (${minAnio.value})`);
 
         d3plus.viz()
             .container("#viz4")
