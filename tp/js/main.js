@@ -325,6 +325,7 @@ class App {
     }
 
     drawTrophiesViz() {
+        /*
         let margin = {top: 50, right: 30, bottom: 10, left: 120},
         width = 670 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
@@ -449,6 +450,42 @@ class App {
 
         var movesize = width/2 - startp.node().getBBox().width/2;
         d3.selectAll(".legendbox").attr("transform", "translate(" + movesize  + ",0)");
+        */
+        let data = [];
+        for (let i in this.titulos) {
+            let t = this.titulos[i];
+            data.push({
+                copa: t.Copa,
+                cantidad: parseInt(t.Boca),
+                equipo: "Boca"
+            });
+            data.push({
+                copa: t.Copa,
+                cantidad: parseInt(t.River),
+                equipo: "River"
+            });
+        }
+
+        d3plus.viz()
+            .container("#viz5")
+            .data(data)
+            .type("bar")
+            .id("equipo")
+            .x("copa")
+            .y("cantidad")
+            .text("equipo")
+            .color((a) => a.equipo === 'Boca' ? '#0000FF' : '#FF0000')
+            .legend({
+                align: "end",
+                data: true,
+                labels: true,
+                value: true,
+                order(a) {
+                    return _.sortBy(a, o => o.cantidad).reverse();
+                }
+            })
+            .height(400)
+            .draw();
     }
 }
 

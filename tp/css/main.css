@@ -127,7 +127,8 @@ footer p {
 #tabla_titulos .row {
     /*border: 1px solid; */
     text-align: center;
-    padding: 6px;
+    /*padding: 6px;*/
+    padding: 3px;
 }
 
 #tabla_titulos .row.titulo {
